@@ -1,5 +1,4 @@
-#include "vex.h"
-#include "math.h"
+#pragma once
 
 class RobotState{
   private:

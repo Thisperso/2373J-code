@@ -41,12 +41,6 @@ motor_group Right (rfdrive, rbdrive);
 
 smartdrive Drivetrain (Left, Right, inert, 12.56, 8, 13.75, distanceUnits::in);
 
-#include "math.h"
-#include <tuple>
-#include <stdio.h>
-
-using namespace vex;
-
 motor_group lft(lfdrive, lbdrive);
 motor_group rht(rfdrive, rbdrive);
 
@@ -54,68 +48,9 @@ motor_group rht(rfdrive, rbdrive);
   11 rows and 11 columns
   move_to(col, row); example:: (5, 4)
 */
-  double encl = lfdrive.position(turns);
-  double encr = rfdrive.position(turns);
-  double rot = inert.rotation(degrees);
-
-RobotState::RobotState(){
-      lread = 0;
-      rread = 0;
-      wheel_size = 0;
-      avgread = 0;
-      gyrot = 0;
-      xe = 0;
-      ye = 0;
-      dxe = 0;
-      dye = 0;
-      prevavg = 0;
-      totaldist = 0;
-      facing = 0;
-      ox = 0;
-      oy = 0;
-    }
-
-    void RobotState::Calculate(double  lenc, double renc, double gyr){
-    double ldist = lenc * 12.56;
-    double rdist = renc * 12.56;
-    gyrot = gyr;
-    avgread = (ldist + rdist)/2.0;
-
-    dxe = (avgread - prevavg) * cos(gyrot*(M_PI/180));
-    dye = (avgread - prevavg) * sin(gyrot*(M_PI/180));
-
-    xe += dxe;
-    ye += dye;
-    facing = inert.rotation(degrees);
-
-    ox = xe/12;
-    oy = ye/12;
-
-    prevavg = avgread;
-    }
-
-    double RobotState::GetX(){
-      return ox;
-    }
-
-    double RobotState::GetY(){
-      return oy;
-    }
-
-    double RobotState::GetAvg(){
-      return prevavg;
-    }
-    
-    double RobotState::GetGyro(){
-      return facing;
-    }
-
-    void RobotState::reset(){
-      prevavg = 0;
-    }
-
-RobotState robot_pos;
-
+double encl = lfdrive.position(turns);
+double encr = rfdrive.position(turns);
+double rot = inert.rotation(degrees);
 
 double ptunedrive;
 
@@ -202,10 +137,10 @@ int drive(double dist, double hold_angle){
     Brain.Screen.clearScreen();
     Brain.Screen.setCursor(1,1);
     Brain.Screen.print("x:");
-    Brain.Screen.print(ox);
+    Brain.Screen.print(robot_pos.GetX());
     Brain.Screen.setCursor(2,1);
     Brain.Screen.print("y:");
-    Brain.Screen.print(oy);
+    Brain.Screen.print(robot_pos.GetY());
     Brain.Screen.setCursor(3,1);
     Brain.Screen.print("facing:");
     Brain.Screen.print(inert.rotation());
@@ -300,20 +235,7 @@ void move_to(double row ,double col){
   prev_angl = angl;
 }
 
-void Drive_to(double x, double y, double tolerance){
-  lfdrive.setPosition(0, turns);
-  rfdrive.setPosition(0, turns);
 
-  double sx = start_x;
-  double sy = start_y;
-
-  double dx = x-sx;
-  double dy = y-sy;
-
-  double dist = sqrt(dy*dy + dx*dx);
-
-  double angl = atan2(dy, dx) * 180.0/M_PI;
-}
 
 
 
@@ -359,6 +281,7 @@ void autonomous(void) {
   move_to(9,7);
   move_to(8,9);
   move_to(7,9);
+  Drive_to(8,8,8);
   //move_to(11,11);
   /*inert.calibrate();
   score.spin(fwd, 100, pct);

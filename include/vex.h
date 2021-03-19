@@ -16,6 +16,8 @@
 #include "v5_vcs.h"
 
 #include "robot-config.h"
+#include "pure_pursuit.h"
+#include "RobotState.h"
 
 #define waitUntil(condition)                                                   \
   do {                                                                         \
@@ -24,3 +26,5 @@
 
 #define repeat(iterations)                                                     \
   for (int iterator = 0; iterator < iterations; iterator++)
+
+static RobotState robot_pos;
