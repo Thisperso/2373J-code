@@ -1,227 +1,3 @@
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// roller               motor         1               
-// rintake              motor         11              
-// rbdrive              motor         12              
-// elevator             motor         15              
-// rfdrive              motor         16              
-// lintake              motor         18              
-// lfdrive              motor         19              
-// lbdrive              motor         20              
-// inert                inertial      17              
-// opti                 optical       14              
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// roller               motor         1               
-// rintake              motor         11              
-// rbdrive              motor         12              
-// elevator             motor         15              
-// rfdrive              motor         16              
-// lintake              motor         18              
-// lfdrive              motor         19              
-// lbdrive              motor         20              
-// inert                inertial      17              
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// roller               motor         1               
-// rintake              motor         11              
-// rbdrive              motor         12              
-// elevator             motor         15              
-// rfdrive              motor         16              
-// lintake              motor         18              
-// lfdrive              motor         19              
-// lbdrive              motor         20              
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// roller               motor         1               
-// rintake              motor         11              
-// rbdrive              motor         12              
-// elevator             motor         15              
-// rfdrive              motor         16              
-// lintake              motor         18              
-// lfdrive              motor         19              
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// roller               motor         1               
-// rintake              motor         11              
-// rbdrive              motor         12              
-// elevator             motor         15              
-// rfdrive              motor         16              
-// lintake              motor         18              
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// roller               motor         1               
-// rintake              motor         11              
-// rbdrive              motor         12              
-// elevator             motor         15              
-// rfdrive              motor         16              
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// roller               motor         1               
-// rintake              motor         11              
-// rbdrive              motor         12              
-// elevator             motor         15              
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// roller               motor         1               
-// rintake              motor         11              
-// rbdrive              motor         12              
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// roller               motor         1               
-// rintake              motor         11              
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// roller               motor         1               
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// opti                 optical       18              
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// roller               motor         3               
-// opti                 optical       18              
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// lintake              motor         5               
-// roller               motor         3               
-// opti                 optical       18              
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// rintake              motor         6               
-// lintake              motor         5               
-// roller               motor         3               
-// opti                 optical       18              
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// rfdrive              motor         8               
-// rintake              motor         6               
-// lintake              motor         5               
-// roller               motor         3               
-// opti                 optical       18              
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// rbdrive              motor         10              
-// rfdrive              motor         8               
-// rintake              motor         6               
-// lintake              motor         5               
-// roller               motor         3               
-// opti                 optical       18              
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// lbdrive              motor         7               
-// rbdrive              motor         10              
-// rfdrive              motor         8               
-// rintake              motor         6               
-// lintake              motor         5               
-// roller               motor         3               
-// opti                 optical       18              
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// lfdrive              motor         9               
-// lbdrive              motor         7               
-// rbdrive              motor         10              
-// rfdrive              motor         8               
-// rintake              motor         6               
-// lintake              motor         5               
-// roller               motor         3               
-// opti                 optical       18              
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// elevator             motor         2               
-// lfdrive              motor         9               
-// lbdrive              motor         7               
-// rbdrive              motor         10              
-// rfdrive              motor         8               
-// rintake              motor         6               
-// lintake              motor         5               
-// roller               motor         3               
-// opti                 optical       18              
-// ---- END VEXCODE CONFIGURED DEVICES ----
-/*----------------------------------------------------------------------------*/
-/*                                                                            */
-/*    Module:       main.cpp                                                  */
-/*    Author:       VEX                                                       */
-/*    Created:      Thu Sep 26 2019                                           */
-/*    Description:  Competition Template                                      */
-/*                                                                            */
-/*----------------------------------------------------------------------------*/
-
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// inert                inertial      4               
-// elevator             motor         2               
-// lfdrive              motor         9               
-// lbdrive              motor         7               
-// rbdrive              motor         10              
-// rfdrive              motor         8               
-// rintake              motor         6               
-// lintake              motor         5               
-// roller               motor         3               
-// opti                 optical       18              
-// ---- END VEXCODE CONFIGURED DEVICES ----
 
 //10 and 20 = left drive
 //1 and 11 = right drive
@@ -358,8 +134,6 @@ int drive(double dist, double hold_angle){
     Brain.Screen.print(turn_error);*/
     vex::task::sleep(10);
   }
-  
-  
   lft.stop(hold);
   rht.stop(hold);
   variance = inert.rotation(degrees);
@@ -485,12 +259,46 @@ void autonomous(void) {
 
 
   //skills autononomous
-  intakes.spin(fwd, 100, pct);
+  intakes.spin(reverse, 100, pct);
   drive(28, 0);
   intakes.stop(hold);
   turn(135);
-  drive(30, 135);
+  drive(34, 135);
   score.spin(fwd, 100, pct);
+  wait(2,sec);
+  drive(-50, 135);
+  turn(270);
+  intakes.spin(fwd, 100, pct);
+  drive(26, 270);
+  score.stop(hold);
+  intakes.stop(hold);
+  turn(180);
+  drive(-28, 180);
+  drive(20, 180);
+  drive(-28, 180);
+  drive(20, 180);
+  drive(-28, 180);
+  drive(22, 180);
+  turn(270);
+  drive(46, 270);
+  turn(0);
+  intakes.spin(fwd, 100, pct);
+  drive(76, 0);
+  intakes.stop(hold);
+  turn(-45);
+  drive(24, -45);
+  score.spin(fwd, 100, pct);
+  wait(3, sec);
+  intakes.spin(reverse, 100, pct);
+  drive(-20,-45);
+  intakes.stop(hold);
+
+
+
+
+
+
+
 
 
 

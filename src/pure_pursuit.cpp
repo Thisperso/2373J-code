@@ -1,7 +1,7 @@
 #include "pure_pursuit.h"
 #include "vex.h"
 
-int PID (double dist, double curr, double p){
+/*int PID (double dist, double curr, double p){
   double mtrspeed = p *  (dist - curr);
 
   double velmax = 90;
@@ -40,3 +40,4 @@ void Drive_to(double x, double y, double tolerance){
   }
 }
 
+*/
