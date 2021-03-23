@@ -19,6 +19,8 @@ motor lfdrive = motor(PORT19, ratio18_1, true);
 motor lbdrive = motor(PORT20, ratio18_1, false);
 inertial inert = inertial(PORT17);
 optical opti = optical(PORT14);
+bumper auton1 = bumper(Brain.ThreeWirePort.A);
+bumper auton2 = bumper(Brain.ThreeWirePort.B);
 
 // VEXcode generated functions
 // define variable for remote controller enable/disable

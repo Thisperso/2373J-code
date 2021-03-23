@@ -1,3 +1,36 @@
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// roller               motor         1               
+// rintake              motor         11              
+// rbdrive              motor         12              
+// elevator             motor         15              
+// rfdrive              motor         16              
+// lintake              motor         18              
+// lfdrive              motor         19              
+// lbdrive              motor         20              
+// inert                inertial      17              
+// opti                 optical       14              
+// auton1               bumper        A               
+// auton2               bumper        B               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// roller               motor         1               
+// rintake              motor         11              
+// rbdrive              motor         12              
+// elevator             motor         15              
+// rfdrive              motor         16              
+// lintake              motor         18              
+// lfdrive              motor         19              
+// lbdrive              motor         20              
+// inert                inertial      17              
+// opti                 optical       14              
+// auton1               bumper        A               
+// ---- END VEXCODE CONFIGURED DEVICES ----
 
 //10 and 20 = left drive
 //1 and 11 = right drive
@@ -33,7 +66,7 @@ double ptunedrive;
 int PID (double dist, double curr, double p){
   double mtrspeed = p *  (dist - curr);
 
-  double velmax = 80;
+  double velmax = 70;
 
   if (mtrspeed > velmax){
     mtrspeed = velmax;
@@ -67,7 +100,7 @@ int Turn_PID (double degrees, double curr_t, double t){
 
   double mtrspeed = t * (error);
 
-  double velmax = 30;
+  double velmax = 70;
 
   if (mtrspeed > velmax){
     mtrspeed = velmax;
@@ -250,60 +283,131 @@ void pre_auton(void) {
 
 void autonomous(void) {
 
-  
-
   inert.calibrate();
   while (inert.isCalibrating()){
     wait(10, msec);
   }
 
+  //corner and mid-mid auton
+  if (auton1.pressing()){
+    drive(24, 225);
+    turn(225);
+    intakes.spin(reverse, 100, pct);
+    drive(28, 225);
+    intakes.stop(hold);
+    score.spin(fwd,100,pct);
+    wait(2, sec);
+    drive(-24, 225);
+    turn(0);
+    drive(38, 0);
+    intakes.spin(fwd, 100,pct);
+    drive(-38, 0);
+    intakes.spin(reverse, 100,pct);
+    turn(45);
+    drive(42, 45);
+    score.spin(fwd,100,pct);
+    wait(3, sec);
+    drive(-10, 45);
+  }
 
-  //skills autononomous
-  intakes.spin(reverse, 100, pct);
+  //corner and mid home row right
+  else if (auton2.pressing()){
+    drive(24,0);
+    turn(135);
+    drive(28, 135);
+    score.spin(fwd, 100, pct);
+    wait(2, sec);
+    intakes.spin(fwd, 100, pct);
+    drive(-28, 135);
+    intakes.stop(hold);
+    turn(270);
+    drive(38, 270);
+    turn(180);
+    drive(28, 180);
+    score.spin(fwd, 100, pct);
+    wait(2, sec);
+    drive(-28, 180);
+  }
+
+  //corner and mid home row left
+  else if (auton2.pressing() && auton1.pressing()){
+    drive(24,0);
+    turn(225);
+    drive(28, 225);
+    score.spin(fwd, 100, pct);
+    wait(2, sec);
+    intakes.spin(fwd, 100, pct);
+    drive(-28, 225);
+    intakes.stop(hold);
+    turn(90);
+    drive(38, 90);
+    turn(180);
+    drive(28, 180);
+    score.spin(fwd, 100, pct);
+    wait(2, sec);
+    drive(-28, 180);
+  }
+
+  //skills auton
+  else{
+    intakes.spin(reverse, 100, pct);
   drive(28, 0);
   intakes.stop(hold);
   turn(135);
   drive(34, 135);
   score.spin(fwd, 100, pct);
   wait(2,sec);
-  drive(-50, 135);
-  turn(270);
-  intakes.spin(fwd, 100, pct);
-  drive(26, 270);
-  score.stop(hold);
-  intakes.stop(hold);
-  turn(180);
-  drive(-28, 180);
-  drive(20, 180);
-  drive(-28, 180);
-  drive(20, 180);
-  drive(-28, 180);
-  drive(22, 180);
-  turn(270);
-  drive(46, 270);
+  drive(-20, 135);
   turn(0);
   intakes.spin(fwd, 100, pct);
-  drive(76, 0);
+  drive(50, 0);
+  turn(90);
+  drive(20, 90);
+  score.spin(fwd, 100, pct);
+  wait(2,sec);
+  score.stop(hold);
+  drive(-20, 90);
+  turn(0);
+  drive(36, 0);
+  turn(90);
+  intakes.spin(fwd, 100, pct);
+  drive(24, 90);
+  drive(-24, 90);
+  turn(0);
+  drive(12, 0);
+  turn(45);
+  drive(24, 45);
+  score.spin(fwd, 100, pct);
+  wait(3,sec);
+  score.stop(hold);
+  drive(-24, 45);
+  intakes.spin(fwd, 100, pct);
+  }
+  //skills autononomous
+  /*turn(180);
+  drive(-26, 180);
+  drive(20, 180);
+  drive(-26, 180);
+  drive(20, 180);
+  drive(-26, 180);
+  drive(20, 180);
+  drive(-26, 180);
+  drive(20, 180);
+  drive(-26, 180);
+  drive(22, 180);
+  turn(270);*/
+  /*drive(46, 270);
+  turn(0);
+  intakes.spin(fwd, 100, pct);
+  drive(74, 0);
   intakes.stop(hold);
   turn(-45);
-  drive(24, -45);
+  drive(20, -45);
   score.spin(fwd, 100, pct);
   wait(3, sec);
   intakes.spin(reverse, 100, pct);
   drive(-20,-45);
-  intakes.stop(hold);
-
-
-
-
-
-
-
-
-
-
-
-
+  intakes.stop(hold);*/
 
   //end of skills autonomous
   //move_to(11,11);

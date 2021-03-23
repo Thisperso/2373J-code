@@ -14,6 +14,8 @@ extern motor lfdrive;
 extern motor lbdrive;
 extern inertial inert;
 extern optical opti;
+extern bumper auton1;
+extern bumper auton2;
 
 /**
  * Used to initialize code/tasks/devices added using tools in VEXcode Pro.
