@@ -1,40 +1,4 @@
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// roller               motor         1               
-// rintake              motor         11              
-// rbdrive              motor         12              
-// elevator             motor         15              
-// rfdrive              motor         16              
-// lintake              motor         18              
-// lfdrive              motor         19              
-// lbdrive              motor         20              
-// inert                inertial      17              
-// opti                 optical       14              
-// auton1               bumper        A               
-// auton2               bumper        B               
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// roller               motor         1               
-// rintake              motor         11              
-// rbdrive              motor         12              
-// elevator             motor         15              
-// rfdrive              motor         16              
-// lintake              motor         18              
-// lfdrive              motor         19              
-// lbdrive              motor         20              
-// inert                inertial      17              
-// opti                 optical       14              
-// auton1               bumper        A               
-// ---- END VEXCODE CONFIGURED DEVICES ----
 
-//10 and 20 = left drive
-//1 and 11 = right drive
-//3 = inertial sensor
 #include "vex.h"
 #include "RobotState.h"
 
@@ -117,7 +81,6 @@ int drive(double dist, double hold_angle){
   lfdrive.setPosition(0, turns);
   rfdrive.setPosition(0, turns);
   vex::task::sleep(50);
-  //rfdrive.setPosition(0, turns);
   double curr = 0;
   ptunedrive = 4;
   double t = 1;
@@ -242,30 +205,91 @@ void move_to(double row ,double col){
   prev_angl = angl;
 }
 
+int ball_count = 0;
+int screenx;
+int screeny;
+bool pressed = false;
+int auton_select;
+
+void press(){
+  if (Brain.Screen.pressing()){
+    pressed = true;
+  }  
+
+  else{
+    pressed = false;
+  }
+}
 
 
+int auton_ball_count(){
+  Brain.Screen.setFillColor(red);
+  Brain.Screen.drawRectangle(1,1, 100, 50);
+  Brain.Screen.drawRectangle(60, 1, 100, 50);
+  Brain.Screen.drawRectangle(120, 1, 100, 50);
+
+  screenx = Brain.Screen.xPosition();
+  screeny = Brain.Screen.yPosition();
+
+  while (pressed == false){
+    wait(5,msec);
+    press();
+  }
+
+  if (screenx < 100 && screeny < 55){
+    ball_count = 1;
+  }
+
+  else if (screenx < 100 &&  110 > screeny > 55){
+    ball_count = 2;
+  }
+
+  else if (screenx < 100 && screeny > 110){
+    ball_count = 3;
+  }
+
+  return 1;
+}
+
+int auton_selection(int ball_count){
+  Brain.Screen.clearScreen();
+  Brain.Screen.setFillColor(blue);
+  Brain.Screen.drawRectangle(1,1, 100, 50);
+  Brain.Screen.drawRectangle(60, 1, 100, 50);
+  Brain.Screen.drawRectangle(120, 1, 100, 50);
+
+  screenx = Brain.Screen.xPosition();
+  screeny = Brain.Screen.yPosition();
+
+  while (pressed == false){
+    wait(5,msec);
+    press();
+  }
+
+  if (screenx < 100 && screeny < 55){
+    auton_select = 1;
+  }
+
+  else if (screenx < 100 &&  110 > screeny > 55){
+    auton_select = 2;
+  }
+
+  else if (screenx < 100 && screeny > 110){
+    auton_select = 3;
+  }
+
+  return auton_select;
+}
 
 
-// 1 : red score
-// 2 : blue score
-
-
-// define your global instances of motors and other devices here
-
-/*---------------------------------------------------------------------------*/
-/*                          Pre-Autonomous Functions                         */
-/*                                                                           */
-/*  You may want to perform some actions before the competition starts.      */
-/*  Do them in the following function.  You must return from this function   */
-/*  or the autonomous and usercontrol tasks will not be started.  This       */
-/*  function is only called once after the V5 has been powered on and        */
-/*  not every time that the robot is disabled.                               */
-/*---------------------------------------------------------------------------*/
 
 void pre_auton(void) {
-  inert.calibrate();
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
+  Brain.Screen.setCursor(1,1);
+  auton_ball_count();
+  auton_selection(ball_count);
+
 
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
@@ -297,7 +321,7 @@ void autonomous(void) {
     intakes.stop(hold);
     score.spin(fwd,100,pct);
     wait(2, sec);
-    drive(-24, 225);
+    drive(-28, 225);
     turn(0);
     drive(38, 0);
     intakes.spin(fwd, 100,pct);
@@ -350,7 +374,7 @@ void autonomous(void) {
 
   //skills auton
   else{
-    intakes.spin(reverse, 100, pct);
+  intakes.spin(reverse, 100, pct);
   drive(28, 0);
   intakes.stop(hold);
   turn(135);
@@ -427,59 +451,8 @@ void autonomous(void) {
   score.stop(hold);
   move_to(9,9);*/
 
-  /*opti.setLightPower(100,pct);
-  opti.setLight(ledState::on);
-  Drivetrain.setDriveVelocity(90, percent);
-  Drivetrain.setTurnVelocity(80,pct);
-  roller.spin(directionType::fwd, 600, velocityUnits::rpm);
-  vex::task::sleep(250);
-  roller.stop(brakeType::brake);
-  Drivetrain.driveFor(forward, 36, inches);
-  Drivetrain.turnFor(right, 65, degrees);
-  intakes.spin(fwd, 100, velocityUnits::pct);
-  Drivetrain.driveFor(forward, 18 , inches);
-  intakes.stop(brake);
-  elevator.spin(directionType::fwd, 100, velocityUnits::pct);
-  roller.spin(directionType::fwd, 100, velocityUnits::pct);
-  vex::task::sleep(2500);
-  elevator.stop(brakeType::brake);
-  roller.stop(brakeType::brake);
-  intakes.stop(brakeType::brake);
-  Drivetrain.setDriveVelocity(70, pct);
-  Drivetrain.driveFor(reverse, 25, inches);
-  vex::task::sleep(375);
-  Drivetrain.turnFor(right, 100/2, degrees);
-  Drivetrain.setDriveVelocity(100, pct);
-  Drivetrain.driveFor(forward, 6.2*12, inches);
-  Drivetrain.setTurnVelocity(95, pct);
-  vex::task::sleep(250);
-  Drivetrain.turnFor(left, 90/2, degrees);
-  intakes.spin(fwd, 100, velocityUnits::pct);
-  elevator.spin(directionType::fwd, 100, velocityUnits::pct);
-  roller.spin(directionType::fwd, 100, velocityUnits::pct);
-  Drivetrain.driveFor(forward, 26, inches);
-  vex::task::sleep(1750);
-  intakes.stop(brakeType::brake);
-  roller.stop(brakeType::brake);
-  elevator.stop(brakeType::brake);
-  intakes.spin(reverse, 100, pct);
-  Drivetrain.driveFor(reverse, 10, inches);*/
 
-
-  // ..........................................................................
-  // Insert autonomous user code here.
-  // ..........................................................................
 }
-
-/*---------------------------------------------------------------------------*/
-/*                                                                           */
-/*                              User Control Task                            */
-/*                                                                           */
-/*  This task is used to control your robot during the user control phase of */
-/*  a VEX Competition.                                                       */
-/*                                                                           */
-/*  You must modify the code to add your own robot specific commands here.   */
-/*---------------------------------------------------------------------------*/
 
 void usercontrol(void) {
   // User control code here, inside the loop
