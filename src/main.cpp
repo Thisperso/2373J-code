@@ -205,7 +205,7 @@ void move_to(double row ,double col){
   prev_angl = angl;
 }
 
-int ball_count = 0;
+/*int ball_count = 0;
 int screenx;
 int screeny;
 bool pressed = false;
@@ -281,14 +281,14 @@ int auton_selection(int ball_count){
   return auton_select;
 }
 
-
+*/
 
 void pre_auton(void) {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
-  Brain.Screen.setCursor(1,1);
+  /*Brain.Screen.setCursor(1,1);
   auton_ball_count();
-  auton_selection(ball_count);
+  auton_selection(ball_count);*/
 
 
   // All activities that occur before the competition starts
@@ -313,7 +313,7 @@ void autonomous(void) {
   }
 
   //corner and mid-mid auton
-  if (auton1.pressing()){
+  /*if (auton1.pressing()){
     drive(24, 225);
     turn(225);
     intakes.spin(reverse, 100, pct);
@@ -371,9 +371,11 @@ void autonomous(void) {
     wait(2, sec);
     drive(-28, 180);
   }
-
+*/
   //skills auton
-  else{
+  //else{
+  
+  //first tower
   intakes.spin(reverse, 100, pct);
   drive(28, 0);
   intakes.stop(hold);
@@ -381,32 +383,122 @@ void autonomous(void) {
   drive(34, 135);
   score.spin(fwd, 100, pct);
   wait(2,sec);
-  drive(-20, 135);
+  score.stop(hold);
+
+  //second tower
+  drive(-18, 135);
   turn(0);
   intakes.spin(fwd, 100, pct);
-  drive(50, 0);
+  elevator.spin(fwd, 100, pct);
+  drive(48, 5);
   turn(90);
-  drive(20, 90);
+  intakes.spin(reverse,100,pct);
+  drive(14, 90);
   score.spin(fwd, 100, pct);
   wait(2,sec);
   score.stop(hold);
-  drive(-20, 90);
+
+  //third tower
+  drive(-18, 90);
   turn(0);
   drive(36, 0);
   turn(90);
   intakes.spin(fwd, 100, pct);
-  drive(24, 90);
-  drive(-24, 90);
+  drive(23, 90);
+  drive(-23, 90);
   turn(0);
-  drive(12, 0);
+  drive(8, 0);
   turn(45);
   drive(24, 45);
   score.spin(fwd, 100, pct);
   wait(3,sec);
   score.stop(hold);
-  drive(-24, 45);
+
+  //fourth tower
+  drive(-54, 45);
+  turn(273);
   intakes.spin(fwd, 100, pct);
-  }
+  elevator.spin(fwd, 100, pct);
+  drive(24, 273);
+  turn(0);
+  intakes.spin(reverse, 100, pct);
+  drive(44, 0);
+  score.spin(fwd, 100, pct);
+  wait(2,sec);
+  score.stop(hold);
+
+  //fifth tower
+  drive(-20, 0);
+  intakes.spin(fwd,100,pct);
+  turn(273);
+  drive(50, 273);
+  turn(-45);
+  drive(24, -45);
+  intakes.spin(reverse, 100, pct);
+  score.spin(fwd, 100, pct);
+  wait(2,sec);
+  score.stop(hold);
+
+  //sixth tower
+  drive(-24, -45);
+  turn(183);
+  intakes.spin(fwd,100,pct);
+  elevator.spin(fwd, 100, pct);
+  drive(50, 183);
+  turn(270);
+  intakes.spin(reverse, 100, pct);
+  drive(14, 270);
+  score.spin(fwd, 100, pct);
+  wait(2,sec);
+  score.stop(hold);
+
+  //seventh tower
+  drive(-18, 270);
+  intakes.spin(fwd,100,pct);
+  elevator.spin(fwd, 100, pct);
+  turn(90);
+  drive(24, 90);
+  turn(180);
+  drive(24, 180);
+  turn(225);
+  intakes.spin(reverse, 100, pct);
+  drive(60, 225);
+  score.spin(fwd, 100, pct);
+  wait(2,sec);
+  score.stop(hold);
+
+  //eighth tower 
+  drive(-34, 225);
+  turn(270);
+  intakes.spin(fwd, 100, pct);
+  elevator.spin(fwd, 100, pct);
+  drive(23, 225);
+  drive(-23, 225);
+  turn(135);
+  drive(13, 135);
+  turn(90);
+  drive(26, 90);
+  turn(180);
+  drive(16, 180);
+  score.spin(fwd, 100, pct);
+  wait(2,sec);
+  score.stop(hold);
+
+  //ninth tower
+  drive(-18, 180);
+  turn(0);
+  intakes.spin(fwd, 100, pct);
+  elevator.spin(fwd, 100, pct);
+  drive(24, 0);
+  drive(24, 10);
+  drive(-12, 10);
+  drive(8, 0);
+  score.spin(fwd, 100, pct);
+  wait(2,sec);
+  score.stop(hold);
+  drive(-8, 0);
+
+  //}
   //skills autononomous
   /*turn(180);
   drive(-26, 180);
