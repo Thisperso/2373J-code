@@ -9,11 +9,6 @@ competition Competition;
 motor_group intakes (rintake, lintake);
 motor_group score (elevator, roller);
 
-motor_group Left (lfdrive, lbdrive);
-motor_group Right (rfdrive, rbdrive);
-
-smartdrive Drivetrain (Left, Right, inert, 12.56, 8, 13.75, distanceUnits::in);
-
 motor_group lft(lfdrive, lbdrive);
 motor_group rht(rfdrive, rbdrive);
 
@@ -116,18 +111,6 @@ int drive(double dist, double hold_angle){
     Brain.Screen.setCursor(3,1);
     Brain.Screen.print("facing:");
     Brain.Screen.print(inert.rotation());
-
-    /*Brain.Screen.clearScreen();
-    Brain.Screen.setCursor(1,1);
-    Brain.Screen.print("variance: ");
-    Brain.Screen.print(variance);
-    printf("variance: %.2f hold angle: %.2f turn error: %.2f lspeed: %d rspeed: %d ldist: %.2f rdist: %.2f dist: %.2f \n", variance, hold_angle, turn_error, lspeed, rspeed, ldist, rdist, curr);
-    Brain.Screen.setCursor(2,1);
-    Brain.Screen.print("hold angle: ");
-    Brain.Screen.print(hold_angle);
-    Brain.Screen.setCursor(3,1);
-    Brain.Screen.print("turn error: ");
-    Brain.Screen.print(turn_error);*/
     vex::task::sleep(10);
   }
   lft.stop(hold);
@@ -193,6 +176,11 @@ void move_to(double row ,double col){
   double angl = atan2(dy, dx) * 180.0/M_PI;
 
   double movement = dist*12;
+
+  if (angl - 180 == prev_angl){
+    angl = prev_angl;
+    movement = -1*movement;
+  }
   //printf("dx: %.2f dy: %.2f angle: %.2f row: %.2f col: %.2f\n", dx, dy, angl, dest_row, dest_col);
   //Brain.Screen.print(angl);
   turn(angl);
@@ -203,6 +191,47 @@ void move_to(double row ,double col){
   start_x = dest_row;
   start_y = dest_col;
   prev_angl = angl;
+}
+
+void driveTo(double x, double y, double tolerance){
+  //////// LOGIC ////////////////////////////////////////
+  // inititalize variables and reset encoders
+  // **while loop ( while the dist > tolerance)**
+  // get current x and y
+  // calculate the distance and angle to the final point
+  // send stuff into pid and calculate speeds
+  // write to the motors
+  // exit while loop and move on
+  ///////////////////////////////////////////////////////
+  lfdrive.setRotation(0, turns);
+  rfdrive.setRotation(0, turns);
+  double dist = 1 + tolerance; 
+  int dx = 0;
+  int dy = 0;
+  while ((dist > tolerance)){
+    //calculating delta x and y
+    dx = x-robot_pos.GetX();
+    dy = y-robot_pos.GetY();
+
+    //calculating distance and angle to the next coordinate/point;
+    double dist = sqrt(dy*dy + dx*dx);
+    double angl = atan2(dy, dx) * 180.0/M_PI;
+
+    //calcualting the turn error and speeds
+    double turn_error = short_error(angl, inert.rotation(degrees));
+    int lspeed = PID(0, dist, ptunedrive) + turn_error;
+    int rspeed = PID(0, dist, ptunedrive) - turn_error;
+
+    //motor drive functions
+    lft.spin(forward, lspeed, pct);
+    rht.spin(forward, rspeed, pct);
+
+    //re-calculating the current position
+    robot_pos.Calculate(lfdrive.rotation(turns), rfdrive.rotation(turns), inert.rotation(degrees));
+    wait(10, msec);
+  }
+  
+
 }
 
 /*int ball_count = 0;
@@ -374,7 +403,7 @@ void autonomous(void) {
 */
   //skills auton
   //else{
-  
+    
   //first tower
   intakes.spin(reverse, 100, pct);
   drive(28, 0);
