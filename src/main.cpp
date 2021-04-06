@@ -16,6 +16,7 @@ motor_group rht(rfdrive, rbdrive);
   11 rows and 11 columns
   move_to(col, row); example:: (5, 4)
 */
+
 double encl = lfdrive.position(turns);
 double encr = rfdrive.position(turns);
 double rot = inert.rotation(degrees);
@@ -25,7 +26,7 @@ double ptunedrive;
 int PID (double dist, double curr, double p){
   double mtrspeed = p *  (dist - curr);
 
-  double velmax = 70;
+  double velmax = 90;
 
   if (mtrspeed > velmax){
     mtrspeed = velmax;
@@ -57,7 +58,7 @@ int Turn_PID (double degrees, double curr_t, double t){
 
   double error = short_error(degrees, curr_t);
 
-  double mtrspeed = t * (error);
+  double mtrspeed = t * error;
 
   double velmax = 70;
 
@@ -65,7 +66,7 @@ int Turn_PID (double degrees, double curr_t, double t){
     mtrspeed = velmax;
   } 
   
-  if (mtrspeed < -velmax){
+  else if (mtrspeed < -velmax){
     mtrspeed = -velmax;
   }
 
@@ -77,7 +78,7 @@ int drive(double dist, double hold_angle){
   rfdrive.setPosition(0, turns);
   vex::task::sleep(50);
   double curr = 0;
-  ptunedrive = 4;
+  ptunedrive = 6;
   double t = 1;
   double variance;
   Brain.Screen.clearScreen();
@@ -124,7 +125,7 @@ int drive(double dist, double hold_angle){
 
 int turn(int turn_d){
   double curr_t = inert.rotation(degrees);
-  double turn_tune = 2;
+  double turn_tune = 4;
   double variance;
   Brain.Screen.clearScreen();
   Brain.Screen.print("turn to: ");
@@ -193,22 +194,42 @@ void move_to(double row ,double col){
   prev_angl = angl;
 }
 
+void display_position(){
+  Brain.Screen.clearScreen();
+  Brain.Screen.setCursor(1,1);
+  Brain.Screen.print("x: ", robot_pos.GetX());
+  Brain.Screen.print("y: ", robot_pos.GetY());
+  Brain.Screen.print("heading: ", inert.rotation());
+}
+
+
+
+//DRIVE_TO FUNCTION
 void driveTo(double x, double y, double tolerance){
-  //////// LOGIC ////////////////////////////////////////
-  // inititalize variables and reset encoders
-  // **while loop ( while the dist > tolerance)**
-  // get current x and y
-  // calculate the distance and angle to the final point
-  // send stuff into pid and calculate speeds
-  // write to the motors
-  // exit while loop and move on
-  ///////////////////////////////////////////////////////
+  
+  /*-------------------- LOGIC -------------------------*/
+  /* inititalize variables and reset encoders           */
+  /* **while loop ( while the dist > tolerance)**       */
+  /* get current x and y                                */
+  /* calculate the distance and angle to the final point*/
+  /* send stuff into pid and calculate speeds           */
+  /* write to the motors                                */
+  /* exit while loop and move on                        */
+  /*----------------------------------------------------*/
+
+  //resetting encoders
   lfdrive.setRotation(0, turns);
   rfdrive.setRotation(0, turns);
+
+  //establishing variables/ deltas
   double dist = 1 + tolerance; 
   int dx = 0;
   int dy = 0;
-  while ((dist > tolerance)){
+  bool exit = false;
+
+  //algorithm starts
+  while (fabs(dist > tolerance)){
+
     //calculating delta x and y
     dx = x-robot_pos.GetX();
     dy = y-robot_pos.GetY();
@@ -219,20 +240,72 @@ void driveTo(double x, double y, double tolerance){
 
     //calcualting the turn error and speeds
     double turn_error = short_error(angl, inert.rotation(degrees));
-    int lspeed = PID(0, dist, ptunedrive) + turn_error;
-    int rspeed = PID(0, dist, ptunedrive) - turn_error;
+    int speed = PID(0, dist, ptunedrive);
+
+    //acceleration curve
+    while (speed-lfdrive.velocity(pct) > 30){
+
+      //setting speed intiaially to certain low percent
+      speed = 5;
+      
+      turn_error = short_error(angl, inert.rotation(degrees));
+
+      lft.spin(forward, speed + turn_error, pct);
+      rht.spin(forward, speed - turn_error, pct);
+
+      //reccuring math to increase speed slowly
+      speed = speed + 5;
+      
+      //calculate position from start
+      robot_pos.Calculate(lfdrive.rotation(turns), rfdrive.rotation(turns), inert.rotation(degrees));
+
+      //calculate total distance and angle
+      dist = sqrt(dy*dy + dx*dx);
+      angl = atan2(dy, dx) * 180.0/M_PI;
+
+      //check to see if the point has been reached
+      if (dist <= tolerance){
+        exit = true;
+        break;
+      }
+
+      else{
+        ;
+      }
+
+      display_position();
+      wait(35, msec);
+    }
+
+    //quick exit function for acceleration arrival
+    if (exit == true){
+      break;
+    }
+
+    else{
+      ;
+    }
+
+    speed = PID(0, dist, ptunedrive);
 
     //motor drive functions
-    lft.spin(forward, lspeed, pct);
-    rht.spin(forward, rspeed, pct);
+    lft.spin(forward, speed + turn_error, pct);
+    rht.spin(forward, speed - turn_error, pct);
 
     //re-calculating the current position
     robot_pos.Calculate(lfdrive.rotation(turns), rfdrive.rotation(turns), inert.rotation(degrees));
+
+    //displaying the position on the field
+    display_position();
+
     wait(10, msec);
   }
   
-
+  exit = false;
 }
+
+
+
 
 /*int ball_count = 0;
 int screenx;
@@ -315,24 +388,7 @@ int auton_selection(int ball_count){
 void pre_auton(void) {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
-  /*Brain.Screen.setCursor(1,1);
-  auton_ball_count();
-  auton_selection(ball_count);*/
-
-
-  // All activities that occur before the competition starts
-  // Example: clearing encoders, setting servo positions, ...
 }
-
-/*---------------------------------------------------------------------------*/
-/*                                                                           */
-/*                              Autonomous Task                              */
-/*                                                                           */
-/*  This task is used to control your robot during the autonomous phase of   */
-/*  a VEX Competition.                                                       */
-/*                                                                           */
-/*  You must modify the code to add your own robot specific commands here.   */
-/*---------------------------------------------------------------------------*/
 
 void autonomous(void) {
 
