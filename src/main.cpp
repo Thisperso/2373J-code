@@ -1,6 +1,7 @@
 
 #include "vex.h"
 #include "RobotState.h"
+#include <vex_controller.h>
 
 using namespace vex;
 // A global instance of competition+
@@ -194,12 +195,29 @@ void move_to(double row ,double col){
   prev_angl = angl;
 }
 
+
+
 void display_position(){
+  //controller display
+  Controller1.Screen.clearScreen();
+  Controller1.Screen.setCursor(1,1);
+  Controller1.Screen.print("x: ", robot_pos.GetX());
+  Controller1.Screen.setCursor(2,1);
+  Controller1.Screen.print("y: ", robot_pos.GetY());
+  Controller1.Screen.setCursor(3,1);
+  Controller1.Screen.print("heading: ", inert.rotation());
+
+  //Brain display
   Brain.Screen.clearScreen();
   Brain.Screen.setCursor(1,1);
-  Brain.Screen.print("x: ", robot_pos.GetX());
-  Brain.Screen.print("y: ", robot_pos.GetY());
-  Brain.Screen.print("heading: ", inert.rotation());
+  Brain.Screen.print("x: ");
+  Brain.Screen.print(robot_pos.GetX());
+  Brain.Screen.setCursor(2,1);
+  Brain.Screen.print("y: ");
+  Brain.Screen.print(robot_pos.GetY());
+  Brain.Screen.setCursor(3,1);
+  Brain.Screen.print("heading: ");
+  Brain.Screen.print(inert.rotation());
 }
 
 
@@ -223,31 +241,19 @@ void driveTo(double x, double y, double tolerance){
 
   //establishing variables/ deltas
   double dist = 1 + tolerance; 
-  int dx = 0;
-  int dy = 0;
-  bool exit = false;
+  double dx = 0;
+  double dy = 0;
 
   //algorithm starts
-  while (fabs(dist > tolerance)){
+  while ((fabs(dist) > tolerance)){
 
-    //calculating delta x and y
-    dx = x-robot_pos.GetX();
-    dy = y-robot_pos.GetY();
+    
 
-    //calculating distance and angle to the next coordinate/point;
-    double dist = sqrt(dy*dy + dx*dx);
-    double angl = atan2(dy, dx) * 180.0/M_PI;
-
-    //calcualting the turn error and speeds
-    double turn_error = short_error(angl, inert.rotation(degrees));
-    int speed = PID(0, dist, ptunedrive);
+    //int speed = 5;
 
     //acceleration curve
-    while (speed-lfdrive.velocity(pct) > 30){
+    /*while (lfdrive.velocity(pct) < 60){
 
-      //setting speed intiaially to certain low percent
-      speed = 5;
-      
       turn_error = short_error(angl, inert.rotation(degrees));
 
       lft.spin(forward, speed + turn_error, pct);
@@ -259,6 +265,9 @@ void driveTo(double x, double y, double tolerance){
       //calculate position from start
       robot_pos.Calculate(lfdrive.rotation(turns), rfdrive.rotation(turns), inert.rotation(degrees));
 
+      dx = x-robot_pos.GetX();
+      dy = y-robot_pos.GetY();
+
       //calculate total distance and angle
       dist = sqrt(dy*dy + dx*dx);
       angl = atan2(dy, dx) * 180.0/M_PI;
@@ -269,39 +278,89 @@ void driveTo(double x, double y, double tolerance){
         break;
       }
 
-      else{
-        ;
-      }
-
       display_position();
       wait(35, msec);
     }
 
     //quick exit function for acceleration arrival
-    if (exit == true){
+    if (exit){
       break;
-    }
+    }*/
 
-    else{
-      ;
-    }
-
-    speed = PID(0, dist, ptunedrive);
-
-    //motor drive functions
-    lft.spin(forward, speed + turn_error, pct);
-    rht.spin(forward, speed - turn_error, pct);
+    
 
     //re-calculating the current position
     robot_pos.Calculate(lfdrive.rotation(turns), rfdrive.rotation(turns), inert.rotation(degrees));
 
-    //displaying the position on the field
-    display_position();
+    //calculating delta x and y
+    dx = x-robot_pos.GetX();
+    dy = y-robot_pos.GetY();
 
+    //calculating distance and angle to the next coordinate/point;
+    double dist = sqrt(dy*dy + dx*dx);
+    double angl = atan2(dy, dx) * 180.0/M_PI;
+
+    //calcualting the turn error and speeds
+    double turn_error = Turn_PID(angl, inert.rotation(degrees), .75);
+
+    //displaying the position on the field
+
+    double lspeed = PID(dist, 0, 35) + turn_error;
+    double rspeed = PID(dist, 0, 35) - turn_error;
+
+    //motor drive functions
+    lft.spin(forward, lspeed, pct);
+    rht.spin(forward, rspeed, pct);
+    //display_position();
+
+    Brain.Screen.clearScreen();
+    Brain.Screen.setCursor(1,1);
+    Brain.Screen.print("x: ");
+    Brain.Screen.print(robot_pos.GetX());
+    Brain.Screen.setCursor(1,20);
+    Brain.Screen.print("goal x: ");
+    Brain.Screen.print(x);
+    Brain.Screen.setCursor(2,20);
+    Brain.Screen.print("goal y: ");
+    Brain.Screen.print(y);
+
+    Brain.Screen.setCursor(2,1);
+    Brain.Screen.print("y: ");
+    Brain.Screen.print(robot_pos.GetY());
+    Brain.Screen.setCursor(3,1);
+    Brain.Screen.print("heading: ");
+    Brain.Screen.print(inert.rotation());
+
+    Brain.Screen.setCursor(5,1);
+    Brain.Screen.print("lft: ");
+    Brain.Screen.print(lspeed);
+    Brain.Screen.setCursor(6,1);
+    Brain.Screen.print("rht: ");
+    Brain.Screen.print(rspeed);
+    Brain.Screen.setCursor(7,1);
+    Brain.Screen.print("dist: ");
+    Brain.Screen.print(fabs(dist));
+
+    Brain.Screen.setCursor(9,1);
+    Brain.Screen.print("tolerance: ");
+    Brain.Screen.print(tolerance);
+    Brain.Screen.setCursor(10,1);
+    Brain.Screen.print("absolute distance: ");
+    Brain.Screen.print(bool (fabs(dist) > tolerance));
+    if ((fabs(dist) > tolerance) == false){
+      break;
+    }
+    Brain.Screen.setCursor(11,1);
+    Brain.Screen.print("not done");
     wait(10, msec);
   }
-  
-  exit = false;
+
+
+
+//Brain.Screen.clearScreen();
+    Brain.Screen.setCursor(11,1);
+    Brain.Screen.print("done");
+
 }
 
 
@@ -397,6 +456,25 @@ void autonomous(void) {
     wait(10, msec);
   }
 
+  //------------------------ ISM TESTING -------------------------//
+
+    driveTo(3, 0, 3);
+    driveTo(3, -4, 3);
+    driveTo(3, 0, 3);
+    driveTo(3, 3, 3);
+    driveTo(-4, 3, 3);
+    driveTo(0, 1, .5);
+    driveTo(1, 3, 2);
+    driveTo(3, 0, .5);
+    lft.stop(hold);
+    rht.stop(hold);
+
+    /*driveTo(6, 6, 2);
+    driveTo(4, 4, .5);*/
+
+  //------------------------ END ISM TESTING ---------------------//
+
+
   //corner and mid-mid auton
   /*if (auton1.pressing()){
     drive(24, 225);
@@ -461,7 +539,7 @@ void autonomous(void) {
   //else{
     
   //first tower
-  intakes.spin(reverse, 100, pct);
+  /*intakes.spin(reverse, 100, pct);
   drive(28, 0);
   intakes.stop(hold);
   turn(135);
@@ -581,7 +659,7 @@ void autonomous(void) {
   score.spin(fwd, 100, pct);
   wait(2,sec);
   score.stop(hold);
-  drive(-8, 0);
+  drive(-8, 0);*/
 
   //}
   //skills autononomous
