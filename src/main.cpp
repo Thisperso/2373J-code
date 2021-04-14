@@ -27,7 +27,7 @@ double ptunedrive;
 int PID (double dist, double curr, double p){
   double mtrspeed = p *  (dist - curr);
 
-  double velmax = 80;
+  double velmax = 50;
 
   if (mtrspeed > velmax){
     mtrspeed = velmax;
@@ -61,7 +61,7 @@ int Turn_PID (double degrees, double curr_t, double t){
 
   double mtrspeed = t * error;
 
-  double velmax = 60;
+  double velmax = 80;
 
   if (mtrspeed > velmax){
     mtrspeed = velmax;
@@ -239,8 +239,6 @@ void driveTo(double x, double y, double tolerance, bool backwards){
   /*----------------------------------------------------*/
 
   //resetting encoders
-  lfdrive.setRotation(0, turns);
-  rfdrive.setRotation(0, turns);
 
   //establishing variables/ deltas
   double dist = 1 + tolerance; 
@@ -307,33 +305,35 @@ void driveTo(double x, double y, double tolerance, bool backwards){
     double turn_error = Turn_PID(angl, inert.rotation(degrees), .75);
 
     if (backwards){
-      angl = angl + 180;
+      dist = -dist;
+      angl = angl+180;
+      double turn_error = Turn_PID(angl, inert.rotation(degrees), .75);
 
-      double speed = PID(dist, 0, 90); //+ turn_error;
+      double speed = PID(dist, 0, 30); //+ turn_error;
       //double rspeed = PID(dist, 0, 90) - turn_error;
 
-      if ((speed - lfdrive.velocity(pct)) > 50){
+      /*if ((speed - lfdrive.velocity(pct)) > 50){
       speed = 50;
-      }
+      }*/
 
       //motor drive functions
-      lft.spin(reverse, speed - turn_error, pct);
-      rht.spin(reverse, speed + turn_error, pct);
+      lft.spin(fwd, speed + turn_error, pct);
+      rht.spin(fwd, speed - turn_error, pct);
 
     }
-
+    else{
     //displaying the position on the field
-    else {
+    
       double speed = PID(dist, 0, 90); //+ turn_error;
       //double rspeed = PID(dist, 0, 90) - turn_error;
 
       if ((speed - lfdrive.velocity(pct)) > 50){
         speed = 50;
       }
-
+      
       //motor drive functions
-      lft.spin(forward, speed + turn_error, pct);
-      rht.spin(forward, speed - turn_error, pct);
+      lft.spin(fwd, speed + turn_error, pct);
+      rht.spin(fwd, speed - turn_error, pct);
     }
     display_position();
 
@@ -357,17 +357,17 @@ void driveTo(double x, double y, double tolerance, bool backwards){
 
     Brain.Screen.setCursor(5,1);
     Brain.Screen.print("lft: ");
-    Brain.Screen.print(PID(dist, 0, 90) + turn_error);
+    Brain.Screen.print(PID(dist, 0, 30) + turn_error);
     Brain.Screen.setCursor(6,1);
     Brain.Screen.print("rht: ");
-    Brain.Screen.print(PID(dist, 0, 90) - turn_error);
+    Brain.Screen.print(PID(dist, 0, 30) - turn_error);
     Brain.Screen.setCursor(7,1);
     Brain.Screen.print("dist: ");
     Brain.Screen.print(fabs(dist));
 
     Brain.Screen.setCursor(9,1);
-    Brain.Screen.print("tolerance: ");
-    Brain.Screen.print(tolerance);
+    Brain.Screen.print("angl: ");
+    Brain.Screen.print(angl);
     Brain.Screen.setCursor(10,1);
     Brain.Screen.print("absolute distance: ");
     Brain.Screen.print(bool (fabs(dist) > tolerance));
@@ -380,7 +380,7 @@ void driveTo(double x, double y, double tolerance, bool backwards){
   }
     //Brain.Screen.clearScreen();
     Brain.Screen.setCursor(11,1);
-    Brain.Screen.print("NAE NAE");
+    Brain.Screen.print("done");
 
 }
 
@@ -478,24 +478,45 @@ void autonomous(void) {
   }
 
   //------------------------ ISM TESTING -------------------------//
-
+    //driveTo(2, 0, .5, false);
+    lfdrive.setRotation(0, turns);
+    rfdrive.setRotation(0, turns);
     driveTo(2, 0, 1, false);
-    driveTo(3.5, 3.5, .5, false);
+    intakes.spin(reverse, 100, pct);
+    driveTo(4.3, 2.7, .5, false);
+    lft.stop(hold);
+    rht.stop(hold);
     score.spin(fwd, 100, pct);
     wait(1.25, sec);
     score.stop(hold);
-    driveTo(3.5, 3.5, 2, true);
+    /*driveTo(2.5, 0, .25, true);
+    intakes.spin(fwd, 100, pct);
+    driveTo(4.5, 0, .5, false);*/
+    /*driveTo(2.5, 0, 2, true);
+    intakes.spin(fwd, 100, pct);
+    driveTo(1, -1, .5, false);
+    lft.stop(hold);
+    rht.stop(hold);
+    score.spin(fwd, 100, pct);
+    wait(1.25, sec);
+    score.stop(hold);
+    lft.stop(hold);
+    rht.stop(hold);*/
+    /*score.spin(fwd, 100, pct);
+    wait(1.25, sec);
+    score.stop(hold);
+    driveTo(1, 1, 1, true);
     intakes.spin(fwd, 100, pct);
     elevator.spin(fwd, 100, pct);
-    driveTo(3, 0, .5, false);
-    driveTo(3, 0, 2, true);
-    driveTo(-2, -2, .5, false);
+    driveTo(1.5, 0, .5, false);
+    driveTo(1.5, 0, .5, true);*/
+    /*driveTo(-2, -2, .5, false);
     score.spin(fwd, 100, pct);
     wait(2, sec);
     score.stop(hold);
     driveTo(1, 1, .5, true);
     lft.stop(hold);
-    rht.stop(hold);
+    rht.stop(hold);*/
     /*driveTo(0, 1, .5);
     driveTo(1, 3, 2);
     driveTo(3, 0, .5);*/
@@ -509,7 +530,7 @@ void autonomous(void) {
 
 
   //corner and mid-mid auton
-  if (auton1.pressing()){
+  /*if (auton1.pressing()){
     drive(24, 225);
     turn(225);
     intakes.spin(reverse, 100, pct);
@@ -570,7 +591,7 @@ void autonomous(void) {
   //skills auton
   //else{
     
-  //first tower
+  //first tower*/
   /*drive(28, 0);
   intakes.stop(hold);
   turn(130);
@@ -693,6 +714,7 @@ void autonomous(void) {
   score.stop(hold);
   drive(-8, 0);
   */
+  
   //}
   //skills autononomous
   /*turn(180);
