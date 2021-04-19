@@ -1,3 +1,60 @@
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// roller               motor         1               
+// rintake              motor         11              
+// rbdrive              motor         12              
+// elevator             motor         15              
+// rfdrive              motor         16              
+// lintake              motor         18              
+// lfdrive              motor         19              
+// lbdrive              motor         20              
+// inert                inertial      17              
+// opti                 optical       14              
+// auton1               bumper        A               
+// auton2               bumper        B               
+// auton3               bumper        C               
+// auton4               bumper        D               
+// auton5               bumper        E               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// roller               motor         1               
+// rintake              motor         11              
+// rbdrive              motor         12              
+// elevator             motor         15              
+// rfdrive              motor         16              
+// lintake              motor         18              
+// lfdrive              motor         19              
+// lbdrive              motor         20              
+// inert                inertial      17              
+// opti                 optical       14              
+// auton1               bumper        A               
+// auton2               bumper        B               
+// auton3               bumper        C               
+// auton4               bumper        D               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// roller               motor         1               
+// rintake              motor         11              
+// rbdrive              motor         12              
+// elevator             motor         15              
+// rfdrive              motor         16              
+// lintake              motor         18              
+// lfdrive              motor         19              
+// lbdrive              motor         20              
+// inert                inertial      17              
+// opti                 optical       14              
+// auton1               bumper        A               
+// auton2               bumper        B               
+// auton3               bumper        C               
+// ---- END VEXCODE CONFIGURED DEVICES ----
 
 #include "vex.h"
 #include "RobotState.h"
@@ -132,6 +189,7 @@ int turn(int turn_d){
   Brain.Screen.print("turn to: ");
   Brain.Screen.print(turn_d);
     while(fabs(short_error(turn_d, curr_t)) > 1){
+      robot_pos.Calculate(lfdrive.rotation(turns), rfdrive.rotation(turns), inert.rotation(degrees));
       curr_t = inert.rotation(degrees);
 
       int b_speed = Turn_PID(turn_d, curr_t, turn_tune);
@@ -245,50 +303,13 @@ void driveTo(double x, double y, double tolerance, bool backwards){
   double dx = 0;
   double dy = 0;
 
+  double idx = dx = x-robot_pos.GetX();
+  double idy = dy = y-robot_pos.GetY();
+  double idist = sqrt(idy*idy + idx*idx);
+  double iangl = atan2(dy, dx) * 180.0/M_PI;
+  double accel_speed = 7;
   //algorithm starts
   while ((fabs(dist) > tolerance)){
-
-    
-
-    //int speed = 5;
-
-    //acceleration curve
-    /*while (lfdrive.velocity(pct) < 60){
-
-      turn_error = short_error(angl, inert.rotation(degrees));
-
-      lft.spin(forward, speed + turn_error, pct);
-      rht.spin(forward, speed - turn_error, pct);
-
-      //reccuring math to increase speed slowly
-      speed = speed + 5;
-      
-      //calculate position from start
-      robot_pos.Calculate(lfdrive.rotation(turns), rfdrive.rotation(turns), inert.rotation(degrees));
-
-      dx = x-robot_pos.GetX();
-      dy = y-robot_pos.GetY();
-
-      //calculate total distance and angle
-      dist = sqrt(dy*dy + dx*dx);
-      angl = atan2(dy, dx) * 180.0/M_PI;
-
-      //check to see if the point has been reached
-      if (dist <= tolerance){
-        exit = true;
-        break;
-      }
-
-      display_position();
-      wait(35, msec);
-    }
-
-    //quick exit function for acceleration arrival
-    if (exit){
-      break;
-    }*/
-
-    
 
     //re-calculating the current position
     robot_pos.Calculate(lfdrive.rotation(turns), rfdrive.rotation(turns), inert.rotation(degrees));
@@ -302,39 +323,36 @@ void driveTo(double x, double y, double tolerance, bool backwards){
     double angl = atan2(dy, dx) * 180.0/M_PI;
 
     //calcualting the turn error and speeds
-    double turn_error = Turn_PID(angl, inert.rotation(degrees), .75);
+
+    if ((idist - dist) > idist/12){
+      angl = iangl;
+    }
 
     if (backwards){
       dist = -dist;
       angl = angl+180;
-      double turn_error = Turn_PID(angl, inert.rotation(degrees), .75);
-
-      double speed = PID(dist, 0, 30); //+ turn_error;
-      //double rspeed = PID(dist, 0, 90) - turn_error;
-
-      /*if ((speed - lfdrive.velocity(pct)) > 50){
-      speed = 50;
-      }*/
-
-      //motor drive functions
-      lft.spin(fwd, speed + turn_error, pct);
-      rht.spin(fwd, speed - turn_error, pct);
-
     }
-    else{
-    //displaying the position on the field
-    
-      double speed = PID(dist, 0, 90); //+ turn_error;
-      //double rspeed = PID(dist, 0, 90) - turn_error;
 
-      if ((speed - lfdrive.velocity(pct)) > 50){
-        speed = 50;
-      }
-      
-      //motor drive functions
-      lft.spin(fwd, speed + turn_error, pct);
-      rht.spin(fwd, speed - turn_error, pct);
+    double turn_error = Turn_PID(angl, inert.rotation(degrees), .75);
+
+    double speed = PID(dist, 0, 90); //+ turn_error;
+    //double rspeed = PID(dist, 0, 90) - turn_error;
+
+    /*if ((speed - lfdrive.velocity(pct)) > 50){
+    speed = 50;
+    }*/
+
+    //motor drive functions
+
+    double speed_avg = (rfdrive.velocity(pct) + lfdrive.velocity(pct))/2;
+
+    if ((speed - speed_avg) > 30){
+      accel_speed += 12;
+      speed = accel_speed;
     }
+
+    lft.spin(fwd, speed + turn_error, pct);
+    rht.spin(fwd, speed - turn_error, pct);
     display_position();
 
     Brain.Screen.clearScreen();
@@ -477,21 +495,28 @@ void autonomous(void) {
     wait(10, msec);
   }
 
+  
   //------------------------ ISM TESTING -------------------------//
-    //driveTo(2, 0, .5, false);
+  if (auton5.pressing()){
     lfdrive.setRotation(0, turns);
     rfdrive.setRotation(0, turns);
     driveTo(2, 0, 1, false);
     intakes.spin(reverse, 100, pct);
-    driveTo(4.3, 2.7, .5, false);
+    driveTo(3, 1, 1, false);
+    driveTo(4.5, 2.5, .5, false);
     lft.stop(hold);
     rht.stop(hold);
     score.spin(fwd, 100, pct);
     wait(1.25, sec);
     score.stop(hold);
-    /*driveTo(2.5, 0, .25, true);
+    driveTo(2.5, 0, .25, true);
     intakes.spin(fwd, 100, pct);
-    driveTo(4.5, 0, .5, false);*/
+    turn(225);
+    driveTo(-1.5, -1.5, .25, false);
+    score.spin(fwd, 100, pct);
+    wait(1.25, sec);
+    score.stop(hold);
+  }
     /*driveTo(2.5, 0, 2, true);
     intakes.spin(fwd, 100, pct);
     driveTo(1, -1, .5, false);
@@ -530,63 +555,92 @@ void autonomous(void) {
 
 
   //corner and mid-mid auton
-  /*if (auton1.pressing()){
-    drive(24, 225);
+  if (auton1.pressing()){
+    drive(32, 0);
     turn(225);
-    intakes.spin(reverse, 100, pct);
-    drive(28, 225);
-    intakes.stop(hold);
+    drive(36, 225);
     score.spin(fwd,100,pct);
-    wait(2, sec);
-    drive(-28, 225);
-    turn(0);
-    drive(38, 0);
-    intakes.spin(fwd, 100,pct);
-    drive(-38, 0);
-    intakes.spin(reverse, 100,pct);
-    turn(45);
-    drive(42, 45);
+    wait(1, sec);
+    score.stop(hold);
+    intakes.spin(fwd, 100, pct);
+    drive(-40, 225);
+    elevator.spin(fwd, 100, pct);
+    turn(50);
+    elevator.stop(hold);
+    drive(36, 50);
+    elevator.spin(reverse, 100, pct);
+    wait(.3, sec);
+    turn(50);
     score.spin(fwd,100,pct);
-    wait(3, sec);
+    wait(1, sec);
+    score.stop(hold);
     drive(-10, 45);
   }
 
-  //corner and mid home row right
-  else if (auton2.pressing()){
-    drive(24,0);
-    turn(135);
-    drive(28, 135);
-    score.spin(fwd, 100, pct);
-    wait(2, sec);
-    intakes.spin(fwd, 100, pct);
-    drive(-28, 135);
-    intakes.stop(hold);
-    turn(270);
-    drive(38, 270);
-    turn(180);
-    drive(28, 180);
-    score.spin(fwd, 100, pct);
-    wait(2, sec);
-    drive(-28, 180);
-  }
 
   //corner and mid home row left
-  else if (auton2.pressing() && auton1.pressing()){
-    drive(24,0);
+  if (auton2.pressing()){
+    drive(32,0);
     turn(225);
-    drive(28, 225);
+    drive(38, 225);
+    intakes.stop(hold);
     score.spin(fwd, 100, pct);
-    wait(2, sec);
+    wait(1, sec);
+    score.stop(hold);
     intakes.spin(fwd, 100, pct);
     drive(-28, 225);
-    intakes.stop(hold);
     turn(90);
     drive(38, 90);
     turn(180);
-    drive(28, 180);
+    intakes.spin(fwd, 100, pct);
+    drive(20, 180);
     score.spin(fwd, 100, pct);
-    wait(2, sec);
-    drive(-28, 180);
+    wait(1, sec);
+    drive(-12, 180);
+    intakes.stop(hold);
+  }
+
+  //corner and mid home row right
+  if (auton3.pressing()) {
+    drive(32,0);
+    turn(135);
+    intakes.spin(fwd, 100, pct);
+    drive(38, 135);
+    intakes.stop(hold);
+    score.spin(fwd, 100, pct);
+    wait(1, sec);
+    score.stop(hold);
+    intakes.spin(fwd, 100, pct);
+    drive(-28, 135);
+    turn(270);
+    drive(40, 270);
+    turn(180);
+    drive(20, 180);
+    score.spin(fwd, 100, pct);
+    wait(1, sec);
+    drive(-12, 180);
+  }
+
+  if (auton4.pressing()){
+    drive(32, 0);
+    turn(135);
+    drive(36, 135);
+    score.spin(fwd,100,pct);
+    wait(1, sec);
+    score.stop(hold);
+    intakes.spin(fwd, 100, pct);
+    drive(-40, 135);
+    elevator.spin(fwd, 100, pct);
+    turn(-43);
+    elevator.stop(hold);
+    drive(32, -43);
+    elevator.spin(reverse, 100, pct);
+    wait(.3, sec);
+    turn(-43);
+    score.spin(fwd,100,pct);
+    wait(1, sec);
+    score.stop(hold);
+    drive(-10, -40);
   }
   //skills auton
   //else{
@@ -765,7 +819,6 @@ void autonomous(void) {
 
 void usercontrol(void) {
   // User control code here, inside the loop
-  bool drive_toggle = false;
   while (1) {
 
 

@@ -21,6 +21,9 @@ inertial inert = inertial(PORT17);
 optical opti = optical(PORT14);
 bumper auton1 = bumper(Brain.ThreeWirePort.A);
 bumper auton2 = bumper(Brain.ThreeWirePort.B);
+bumper auton3 = bumper(Brain.ThreeWirePort.C);
+bumper auton4 = bumper(Brain.ThreeWirePort.D);
+bumper auton5 = bumper(Brain.ThreeWirePort.E);
 
 // VEXcode generated functions
 // define variable for remote controller enable/disable

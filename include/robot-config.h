@@ -16,6 +16,9 @@ extern inertial inert;
 extern optical opti;
 extern bumper auton1;
 extern bumper auton2;
+extern bumper auton3;
+extern bumper auton4;
+extern bumper auton5;
 
 /**
  * Used to initialize code/tasks/devices added using tools in VEXcode Pro.
