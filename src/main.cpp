@@ -17,6 +17,27 @@
 // auton3               bumper        C               
 // auton4               bumper        D               
 // auton5               bumper        E               
+// presentation         bumper        F               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// roller               motor         1               
+// rintake              motor         11              
+// rbdrive              motor         12              
+// elevator             motor         15              
+// rfdrive              motor         16              
+// lintake              motor         18              
+// lfdrive              motor         19              
+// lbdrive              motor         20              
+// inert                inertial      17              
+// opti                 optical       14              
+// auton1               bumper        A               
+// auton2               bumper        B               
+// auton3               bumper        C               
+// auton4               bumper        D               
+// auton5               bumper        E               
 // ---- END VEXCODE CONFIGURED DEVICES ----
 // ---- START VEXCODE CONFIGURED DEVICES ----
 // Robot Configuration:
@@ -80,11 +101,17 @@ double encr = rfdrive.position(turns);
 double rot = inert.rotation(degrees);
 
 double ptunedrive;
+double dtunedrive;
 
-int PID (double dist, double curr, double p){
-  double mtrspeed = p *  (dist - curr);
 
-  double velmax = 50;
+int PID (double dist, double curr, double p, double d){
+  double prevError = 0.0;
+  double Error = dist-curr;
+  double dError = Error-prevError;
+
+  double mtrspeed = p * Error + d * dError;
+
+  double velmax = 80;
 
   if (mtrspeed > velmax){
     mtrspeed = velmax;
@@ -93,6 +120,8 @@ int PID (double dist, double curr, double p){
   if (mtrspeed < -velmax){
     mtrspeed = -velmax;
   }
+
+  prevError = Error;
 
   return (int) mtrspeed; 
 } 
@@ -137,6 +166,7 @@ int drive(double dist, double hold_angle){
   vex::task::sleep(50);
   double curr = 0;
   ptunedrive = 6;
+  dtunedrive = 6;
   double t = 1;
   double variance;
   Brain.Screen.clearScreen();
@@ -151,8 +181,8 @@ int drive(double dist, double hold_angle){
     double rdist = rrot*12.57;
 
     double turn_error = short_error(hold_angle, variance);
-    int lspeed = PID(dist, ldist, ptunedrive) + turn_error;
-    int rspeed = PID(dist, rdist, ptunedrive) - turn_error;
+    int lspeed = PID(dist, ldist, ptunedrive, dtunedrive) + turn_error;
+    int rspeed = PID(dist, rdist, ptunedrive, dtunedrive) - turn_error;
     
     curr = (ldist+rdist)/2;
 
@@ -264,9 +294,7 @@ void display_position(){
   Controller1.Screen.setCursor(2,1);
   Controller1.Screen.print("y: ");
   Controller1.Screen.print(robot_pos.GetY());
-  Controller1.Screen.setCursor(3,1);
-  Controller1.Screen.print("heading: ");
-  Controller1.Screen.print(inert.rotation());
+  
 
   //Brain display
   Brain.Screen.clearScreen();
@@ -280,6 +308,8 @@ void display_position(){
   Brain.Screen.print("heading: ");
   Brain.Screen.print(inert.rotation());
 }
+
+
 
 
 
@@ -302,9 +332,10 @@ void driveTo(double x, double y, double tolerance, bool backwards){
   double dist = 1 + tolerance; 
   double dx = 0;
   double dy = 0;
+  double myAngl = 0;
 
-  double idx = dx = x-robot_pos.GetX();
-  double idy = dy = y-robot_pos.GetY();
+  double idx = x-robot_pos.GetX();
+  double idy = y-robot_pos.GetY();
   double idist = sqrt(idy*idy + idx*idx);
   double iangl = atan2(dy, dx) * 180.0/M_PI;
   double accel_speed = 7;
@@ -322,11 +353,14 @@ void driveTo(double x, double y, double tolerance, bool backwards){
     double dist = sqrt(dy*dy + dx*dx);
     double angl = atan2(dy, dx) * 180.0/M_PI;
 
+    
+
+
     //calcualting the turn error and speeds
 
-    if ((idist - dist) > idist/12){
+    /*if ((idist - dist) > idist/12){
       angl = iangl;
-    }
+    }*/
 
     if (backwards){
       dist = -dist;
@@ -335,7 +369,7 @@ void driveTo(double x, double y, double tolerance, bool backwards){
 
     double turn_error = Turn_PID(angl, inert.rotation(degrees), .75);
 
-    double speed = PID(dist, 0, 90); //+ turn_error;
+    double speed = PID(dist, 0, 90, 90); //+ turn_error;
     //double rspeed = PID(dist, 0, 90) - turn_error;
 
     /*if ((speed - lfdrive.velocity(pct)) > 50){
@@ -375,10 +409,10 @@ void driveTo(double x, double y, double tolerance, bool backwards){
 
     Brain.Screen.setCursor(5,1);
     Brain.Screen.print("lft: ");
-    Brain.Screen.print(PID(dist, 0, 30) + turn_error);
+    Brain.Screen.print(PID(dist, 0, 90, 90) + turn_error);
     Brain.Screen.setCursor(6,1);
     Brain.Screen.print("rht: ");
-    Brain.Screen.print(PID(dist, 0, 30) - turn_error);
+    Brain.Screen.print(PID(dist, 0, 90, 90) - turn_error);
     Brain.Screen.setCursor(7,1);
     Brain.Screen.print("dist: ");
     Brain.Screen.print(fabs(dist));
@@ -389,12 +423,163 @@ void driveTo(double x, double y, double tolerance, bool backwards){
     Brain.Screen.setCursor(10,1);
     Brain.Screen.print("absolute distance: ");
     Brain.Screen.print(bool (fabs(dist) > tolerance));
+    Controller1.Screen.setCursor(3,1);
+    Controller1.Screen.print("angl: ");
+    Controller1.Screen.print(angl);
     if ((fabs(dist) > tolerance) == false){
       break;
     }
     Brain.Screen.setCursor(11,1);
     Brain.Screen.print("not done");
     wait(10, msec);
+
+   /*static int hold = 3;
+   if(hold == 0)
+ {   while (1){
+      ;
+    }
+ } hold--;
+ */
+  }
+    //Brain.Screen.clearScreen();
+    Brain.Screen.setCursor(11,1);
+    Brain.Screen.print("done");
+
+}
+
+std::pair <double,double> inter_point;
+
+void driveToAngle(double x, double y, double incomingAngle, double tolerance, bool backwards){
+  
+  /*-------------------- LOGIC -------------------------*/
+  /* inititalize variables and reset encoders           */
+  /* **while loop ( while the dist > tolerance)**       */
+  /* get current x and y                                */
+  /* calculate the distance and angle to the final point*/
+  /* send stuff into pid and calculate speeds           */
+  /* write to the motors                                */
+  /* exit while loop and move on                        */
+  /*----------------------------------------------------*/
+
+  //resetting encoders
+
+  //establishing variables/ deltas
+  double dist = 1 + tolerance; 
+  double dx = 0;
+  double dy = 0;
+  double myAngl = 0;
+
+  double idx = x-robot_pos.GetX();
+  double idy = y-robot_pos.GetY();
+  double idist = sqrt(idy*idy + idx*idx);
+  double iangl = atan2(dy, dx) * 180.0/M_PI;
+  double accel_speed = 7;
+  double spacingCount = 8;
+  double spacing_tolerance = tolerance/spacingCount;
+
+  
+  
+  //algorithm starts
+  while ((fabs(dist) > tolerance)){
+
+    //re-calculating the current position
+    robot_pos.Calculate(lfdrive.rotation(turns), rfdrive.rotation(turns), inert.rotation(degrees));
+
+    //calculating delta x and y
+    dx = x-robot_pos.GetX();
+    dy = y-robot_pos.GetY();
+
+    //calculating distance and angle to the next coordinate/point;
+    double dist = sqrt(dy*dy + dx*dx);
+    double angl = atan2(dy, dx) * 180.0/M_PI;
+
+    
+
+
+    //calcualting the turn error and speeds
+
+    /*if ((idist - dist) > idist/12){
+      angl = iangl;
+    }*/
+
+    if (backwards){
+      dist = -dist;
+      angl = angl+180;
+    }
+
+    double turn_error = Turn_PID(angl, inert.rotation(degrees), .75);
+
+    double speed = PID(dist, 0, 90, 90); //+ turn_error;
+    //double rspeed = PID(dist, 0, 90) - turn_error;
+
+    /*if ((speed - lfdrive.velocity(pct)) > 50){
+    speed = 50;
+    }*/
+
+    //motor drive functions
+
+    double speed_avg = (rfdrive.velocity(pct) + lfdrive.velocity(pct))/2;
+
+    if ((speed - speed_avg) > 30){
+      accel_speed += 12;
+      speed = accel_speed;
+    }
+
+    lft.spin(fwd, speed + turn_error, pct);
+    rht.spin(fwd, speed - turn_error, pct);
+    display_position();
+
+    Brain.Screen.clearScreen();
+    Brain.Screen.setCursor(1,1);
+    Brain.Screen.print("x: ");
+    Brain.Screen.print(robot_pos.GetX());
+    Brain.Screen.setCursor(1,20);
+    Brain.Screen.print("goal x: ");
+    Brain.Screen.print(x);
+    Brain.Screen.setCursor(2,20);
+    Brain.Screen.print("goal y: ");
+    Brain.Screen.print(y);
+
+    Brain.Screen.setCursor(2,1);
+    Brain.Screen.print("y: ");
+    Brain.Screen.print(robot_pos.GetY());
+    Brain.Screen.setCursor(3,1);
+    Brain.Screen.print("heading: ");
+    Brain.Screen.print(inert.rotation());
+
+    Brain.Screen.setCursor(5,1);
+    Brain.Screen.print("lft: ");
+    Brain.Screen.print(PID(dist, 0, 90, 90) + turn_error);
+    Brain.Screen.setCursor(6,1);
+    Brain.Screen.print("rht: ");
+    Brain.Screen.print(PID(dist, 0, 90, 90) - turn_error);
+    Brain.Screen.setCursor(7,1);
+    Brain.Screen.print("dist: ");
+    Brain.Screen.print(fabs(dist));
+
+    Brain.Screen.setCursor(9,1);
+    Brain.Screen.print("angl: ");
+    Brain.Screen.print(angl);
+    Brain.Screen.setCursor(10,1);
+    Brain.Screen.print("absolute distance: ");
+    Brain.Screen.print(bool (fabs(dist) > tolerance));
+    Controller1.Screen.setCursor(3,1);
+    Controller1.Screen.print("angl: ");
+    Controller1.Screen.print(angl);
+    if ((fabs(dist) > tolerance) == false){
+      break;
+    }
+    Brain.Screen.setCursor(11,1);
+    Brain.Screen.print("not done");
+    wait(10, msec);
+
+   /*static int hold = 3;
+   if(hold == 0)
+ {   while (1){
+      ;
+    }
+ } hold--;
+ */
   }
     //Brain.Screen.clearScreen();
     Brain.Screen.setCursor(11,1);
@@ -641,6 +826,93 @@ void autonomous(void) {
     wait(1, sec);
     score.stop(hold);
     drive(-10, -40);
+  }
+
+  if (presentation.pressing()){
+/*//driveTo(2.0,3.429,.375, false);
+//driveTo(2.143,3.571,.375, false);
+//driveTo(2.286,3.714,.375, false);
+//driveTo(2.429,3.857,.375, false);
+driveTo(2.571,4.0,.375, false);
+//driveTo(2.714,4.143,.375, false);
+//driveTo(2.857,4.286,.375, false);
+//driveTo(3.0,4.429,.375, false);
+//driveTo(3.143,4.571,.375, false);
+driveTo(3.286,4.714,.375, false);
+//driveTo(3.429,4.857,.375, false);
+//driveTo(3.571,5.0,.375, false);
+//driveTo(3.714,5.143,.375, false);
+//driveTo(3.857,5.286,.375, false);
+driveTo(4.0,5.429,.375, false);
+//driveTo(4.143,5.571,.375, false);
+//driveTo(4.286,5.714,.375, false);
+//driveTo(4.429,5.857,.375, false);
+//driveTo(4.571,6.0,.375, false);
+driveTo(4.714,6.143,.375, false);
+//driveTo(4.857,6.286,.375, false);
+//driveTo(5.0,6.429,.375, false);
+//driveTo(5.143,6.571,.375, false);
+//driveTo(5.286,6.714,.375, false);
+driveTo(5.429,6.857,.375, false);
+//driveTo(5.429,7.0,.375, false);
+//driveTo(5.429,7.143,.375, false);
+//driveTo(5.571,7.286,.375, false);
+//driveTo(5.714,7.429,.375, false);
+driveTo(5.857,7.571,.375, false);
+//driveTo(6.0,7.714,.375, false);
+//driveTo(6.0,7.857,.375, false);
+//driveTo(6.0,8.0,.375, false);
+//driveTo(6.0,8.143,.375, false);
+driveTo(6.143,7.714,.375, false);
+//driveTo(6.143,7.857,.375, false);
+//driveTo(6.143,8.286,.375, false);
+//driveTo(6.286,8.429,.375, false);
+//driveTo(6.429,8.571,.375, false);
+driveTo(6.571,8.714,.375, false);
+//driveTo(6.714,8.857,.375, false);
+//driveTo(6.857,9.0,.375, false);
+//driveTo(7.0,9.143,.375, false);
+//driveTo(7.143,9.286,.375, false);
+driveTo(7.286,9.429,.375, false);
+//driveTo(7.429,9.571,.375, false);
+//driveTo(7.571,9.714,.375, false);
+//driveTo(7.714,9.857,.375, false);
+//driveTo(7.857,10.0,.375, false);
+driveTo(8.0,10.143,.375, false);
+//driveTo(8.143,10.286,.375, false);
+//driveTo(8.286,10.429,.375, false);
+//driveTo(8.429,10.571,.375, false);
+//driveTo(8.571,10.714,.375, false);
+driveTo(8.714,10.857,.375, false);
+//driveTo(8.857,11.0,.375, false);
+//driveTo(9.0,11.0,.375, false);
+//driveTo(9.143,11.0,.375, false);
+//driveTo(9.286,11.0,.375, false);
+driveTo(9.429,11.0,.375, false);
+//driveTo(9.571,11.0,.375, false);
+//driveTo(9.714,11.0,.375, false);
+ 
+//driveTo(8.143,3.429,.375, false);
+
+lft.stop(hold);
+rht.stop(hold);
+*/
+driveTo(1,0, .5, false);
+driveTo(3,1, .5, false);
+driveTo(8 ,1, 1.5, false);
+driveTo(8 , 5, .5, false);
+driveTo( 6, 5, .5, true);
+driveTo( 2, 8, .5, true);
+driveTo( 2, 2, .5, false);
+driveTo( 4, 2, .5, false);
+driveTo( 0, 2, .5, true);
+lft.stop(hold);
+rht.stop(hold);
+
+
+
+//driveTo(3.571,1.286,.125, false);
+
   }
   //skills auton
   //else{

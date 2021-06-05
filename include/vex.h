@@ -11,9 +11,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <utility>
 
 #include "v5.h"
 #include "v5_vcs.h"
+#include <vex_imu.h>
 
 #include "robot-config.h"
 #include "pure_pursuit.h"

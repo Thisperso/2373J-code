@@ -7,7 +7,7 @@ RobotState::RobotState(){
       wheel_size = 0;
       avgread = 0;
       gyrot = 0;
-      xe = 0;
+      xe =  0;
       ye = 0;
       dxe = 0;
       dye = 0;

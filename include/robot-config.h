@@ -19,6 +19,7 @@ extern bumper auton2;
 extern bumper auton3;
 extern bumper auton4;
 extern bumper auton5;
+extern bumper presentation;
 
 /**
  * Used to initialize code/tasks/devices added using tools in VEXcode Pro.
