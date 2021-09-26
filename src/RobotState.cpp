@@ -19,8 +19,8 @@ RobotState::RobotState(){
     }
 
     void RobotState::Calculate(double  lenc, double renc, double gyr){
-    double ldist = lenc * 12.56;
-    double rdist = renc * 12.56;
+    double ldist = (lenc*3/5) * 3.25*M_PI;
+    double rdist = (renc*3/5) * 3.25*M_PI;
     gyrot = gyr;
     avgread = (ldist + rdist)/2.0;
 
